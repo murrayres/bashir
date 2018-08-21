@@ -93,26 +93,25 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
     { 'url': 'https://testapp-bashir.maruapp.octanner.io'}
     end
   end
-  let(:spaceresponsebody) { app.regionapi.createspace(spaceinfo[:name], spaceinfo[:internal],spaceinfo[:stack]) } 
   let(:appresponsebody) { app.regionapi.createapp(appinfo[:appname], appinfo[:appport]) } 
   let(:spaceappresponsebody) { app.regionapi.addapptospace(spaceappinfo[:appname], spaceappinfo[:space],spaceappinfo[:instances],spaceappinfo[:plan]) } 
   let(:configsetresponsebody) { app.regionapi.createconfigset(configsetinfo[:name], configsetinfo[:type]) } 
   let(:configvarresponsebody) { app.regionapi.addconfigvar(configvarinfo[:setname], configvarinfo[:varname],configvarinfo[:varvalue]) } 
   let(:deployresponsebody) { app.regionapi.deployapp(deployinfo[:appname], deployinfo[:space],deployinfo[:image]) } 
 
+
   scenario 'create an app and make sure it is up',
            type: 'contract', appserver: 'none', broken: false,
            development: true, staging: true, production: false do
-    expect(JSON.parse(spaceresponsebody)).not_to be_empty
     expect(JSON.parse(appresponsebody)).not_to be_empty
     expect(JSON.parse(spaceappresponsebody)).not_to be_empty
     expect(JSON.parse(configsetresponsebody)).not_to be_empty
     expect(JSON.parse(configvarresponsebody)).not_to be_empty
     expect(JSON.parse(deployresponsebody)).not_to be_empty
     sleep(5)
-   livecode = 0
-   $stdout.puts "Waiting for app to turn up ..."
-   10.times do
+    livecode = 0
+    $stdout.puts "Waiting for app to turn up ..."
+    10.times do
     livecheckresponse= app.regionapi.livecheck(livecheckinfo[:url])
     $stdout.puts "status code : "+livecheckresponse.to_s
       if livecheckresponse == 200 then 
@@ -120,7 +119,51 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
         break
       end
       sleep 5
+    end
+      expect(livecode).to eq 200
   end
-  expect(livecode).to eq 200
+ 
+
+
+
+  before(:all) do
+    $stdout.puts "running reset"
+    case app.env
+    when 'DS2'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
+    when 'MARU'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
+    end
   end
+
+
+  after(:all) do
+    $stdout.puts "running reset"
+    case app.env
+    when 'DS2'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
+    when 'MARU'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
+    end
+   end
+
+
+
+
 end

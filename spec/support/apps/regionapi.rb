@@ -11,6 +11,21 @@ class Regionapi < AutomationFramework::Utilities
         expect(response.status).to eq 201
         response.body
     end
+    def deletespace(name, internal, stack)
+        uri = '/v1/space/'+name
+        headers = {}
+        $stdout.puts ENV['APP_URL']+uri
+        payload={:name => name,:internal => internal,:stack => stack }
+        $stdout.puts payload.to_json.to_s
+        #response = Faraday.new(ENV['APP_URL']).delete uri, payload.to_json, headers
+        #$stdout.puts response.body.to_s
+#       # expect(response.status).to eq 200
+        #response.body
+        conn = Faraday.new
+        response = conn.run_request(:delete, ENV['APP_URL']+uri, payload.to_json, headers)
+        $stdout.puts response.body.to_s
+        response.body
+    end
     def createapp(appname, appport)
         uri = '/v1/app'
         headers = {}
@@ -20,6 +35,15 @@ class Regionapi < AutomationFramework::Utilities
         response = Faraday.new(ENV['APP_URL']).post uri, payload.to_json, headers
         $stdout.puts response.body.to_s
         expect(response.status).to eq 201
+        response.body
+    end
+    def deleteapp(appname)
+        uri = '/v1/app/'+appname
+        headers = {}
+        $stdout.puts ENV['APP_URL']
+        response = Faraday.new(ENV['APP_URL']).delete uri, {}, headers
+        $stdout.puts response.body.to_s
+        expect(response.status).to eq 200
         response.body
     end
     def addapptospace(appname, space, instances, plan)
@@ -33,6 +57,16 @@ class Regionapi < AutomationFramework::Utilities
         expect(response.status).to eq 201
         response.body
     end
+    def deleteappfromspace(appname, space)
+        uri = '/v1/space/'+space+'/app/'+appname
+        headers = {}
+        $stdout.puts ENV['APP_URL']
+        response = Faraday.new(ENV['APP_URL']).delete uri, {}, headers
+        $stdout.puts response.body.to_s
+        expect(response.status).to eq 200
+        response.body
+    end
+
     def createconfigset(name, type)
         uri = '/v1/config/set'
         headers = {}
@@ -42,6 +76,15 @@ class Regionapi < AutomationFramework::Utilities
         response = Faraday.new(ENV['APP_URL']).post uri, payload.to_json, headers
         $stdout.puts response.body.to_s
         expect(response.status).to eq 201
+        response.body
+    end
+    def deleteconfigset(name)
+        uri = '/v1/config/set/'+name
+        headers = {}
+        $stdout.puts ENV['APP_URL']
+        response = Faraday.new(ENV['APP_URL']).delete uri, {}, headers
+        $stdout.puts response.body.to_s
+        expect(response.status).to eq 200
         response.body
     end
     def addconfigvar(setname, varname, varvalue)
@@ -55,6 +98,15 @@ class Regionapi < AutomationFramework::Utilities
         response = Faraday.new(ENV['APP_URL']).post uri, payloadarray.to_json, headers
         $stdout.puts response.body.to_s
         expect(response.status).to eq 201
+        response.body
+    end
+    def deleteconfigvar(setname, varname)
+        uri = '/v1/config/set/'+setname+'/configvar/'+varname
+        headers = {}
+        $stdout.puts ENV['APP_URL']
+        response = Faraday.new(ENV['APP_URL']).delete uri, {}, headers
+        $stdout.puts response.body.to_s
+        expect(response.status).to eq 200
         response.body
     end
     def deployapp(appname, space, appimage)
@@ -75,7 +127,8 @@ class Regionapi < AutomationFramework::Utilities
         begin
           response = Faraday.new(url).get uri, {}, headers
           return response.status
-        rescue Faraday::Error::ConnectionFailed => e
+        rescue => e
+          $stdout.puts e.message
           return 0
         end  
         return 0
