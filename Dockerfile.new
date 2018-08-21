@@ -1,0 +1,115 @@
+FROM selenium/node-chrome:3.4.0-dysprosium
+LABEL authors=SeleniumHQ
+
+USER root
+#COPY entry_point.sh /opt/bin/entry_point.sh
+
+EXPOSE 4444
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    autoconf \
+    build-essential \
+    curl \
+    imagemagick \
+    libbz2-dev \
+    libcurl4-openssl-dev \
+    libevent-dev \
+    libffi-dev \
+    libglib2.0-dev \
+    libjpeg-dev \
+    libmagickcore-dev \
+    libmagickwand-dev \
+    libmysqlclient-dev \
+    libncurses-dev \
+    libpq-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libyaml-dev \
+    zlib1g-dev \
+    unzip \
+    bison \
+    libgdm-dev \
+    postgresql-client \
+    nodejs \
+    ruby \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# skip installing gem documentation
+RUN mkdir -p /usr/local/etc \
+    && { \
+        echo 'install: --no-document'; \
+        echo 'update: --no-document'; \
+    } >> /usr/local/etc/gemrc
+
+ARG RUBY_MAJOR="2.4"
+ARG RUBY_VERSION="2.4.1"
+ARG RUBY_SHA256="a330e10d5cb5e53b3a0078326c5731888bb55e32c4abfeb27d9e7f8e5d000250"
+ARG RUBYGEMS_VERSION="2.6.4"
+ARG BUNDLER_VERSION="1.15.0"
+
+ENV RUBY_MAJOR ${RUBY_MAJOR}
+ENV RUBY_VERSION ${RUBY_VERSION}
+ENV RUBY_SHA256 ${RUBY_SHA256}
+ENV RUBYGEMS_VERSION ${RUBYGEMS_VERSION}
+ENV BUNDLER_VERSION ${BUNDLER_VERSION}
+
+# some of ruby's build scripts are written in ruby
+# we purge this later to make sure our final image uses what we just built
+RUN set -ex \
+    && curl -fsSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
+    && echo "$RUBY_SHA256 ruby.tar.gz" | sha256sum -c - \
+    && mkdir -p /usr/src/ruby \
+    && tar -xzf ruby.tar.gz -C /usr/src/ruby --strip-components=1 \
+    && rm ruby.tar.gz \
+    && cd /usr/src/ruby \
+    && { echo '#define ENABLE_PATH_CHECK 0'; echo; cat file.c; } > file.c.new && mv file.c.new file.c \
+    && autoconf \
+    && ./configure --disable-install-doc \
+    && make -j"$(nproc)" \
+    && make install \
+    && apt-get purge -y --auto-remove $buildDeps \
+    && gem update --system $RUBYGEMS_VERSION \
+    && rm -r /usr/src/ruby
+
+#RUN gem install bundler --version "$BUNDLER_VERSION"
+RUN gem install bundler
+
+# install things globally, for great justice
+# and don't create ".bundle" in all our apps
+ENV GEM_HOME /usr/local/bundle
+ENV BUNDLE_PATH="$GEM_HOME" \
+    BUNDLE_BIN="$GEM_HOME/bin" \
+    BUNDLE_SILENCE_ROOT_WARNING=1 \
+    BUNDLE_APP_CONFIG="$GEM_HOME"
+ENV PATH $BUNDLE_BIN:$PATH
+RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
+    && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
+
+WORKDIR /app
+
+USER root
+RUN bundle config --global frozen 1
+
+# Bundle the gems in a separate directory, so that Docker
+# can cache the results and only re-bundle gems if the
+# Gemfile or Gemfile.lock files change.
+RUN mkdir -p /gems
+WORKDIR /gems
+ADD Gemfile Gemfile
+ADD Gemfile.lock Gemfile.lock
+RUN bundle install
+
+# Install the application
+ENV APP_DIR /app
+RUN mkdir -p ${APP_DIR}
+WORKDIR ${APP_DIR}
+ADD . ${APP_DIR}
+CMD ./startui.sh
+
+
+

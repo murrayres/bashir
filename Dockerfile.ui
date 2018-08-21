@@ -1,0 +1,3 @@
+FROM quay.octanner.io/developer/rubychrome-onbuild:latest
+CMD ./startui.sh
+
