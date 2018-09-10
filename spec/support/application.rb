@@ -6,6 +6,9 @@ module AutomationFramework
     def regionapi
       @regionapi ||= Regionapi.new
     end
+    def influxapi
+      @influxapi ||= Influxapi.new
+    end
   end
   # rubocop:enable Metrics/ClassLength
 end
