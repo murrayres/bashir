@@ -1,5 +1,6 @@
 class Cassandraapi < AutomationFramework::Utilities
     include CallServices
+    require 'dse'
     def provision(plan, billingcode)
         uri = '/v1/service/cassandra/instance'
         headers = {}
@@ -23,6 +24,17 @@ class Cassandraapi < AutomationFramework::Utilities
     end
 
 
+    def hitDB(location, keyspace, username, password)
+          cluster = Dse.cluster(
+              hosts: [location],
+              username: username,
+              password: password
+            )
+          puts "authentication successful"
+          session = cluster.connect(keyspace)
+          $stdout.puts session.keyspace
+          session.keyspace
+    end
 
     def deletedb(db)
         uri = '/v1/service/cassandra/instance/'+db

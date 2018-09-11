@@ -8,6 +8,7 @@ feature 'creates an cassandra db and makes sure it can be reached', sauce: false
   scenario 'provision, get url, access, delete',
            type: 'contract', appserver: 'none', broken: false,
            development: true, staging: true, production: false do
+
     cassandra_db = JSON.parse(provisionbody)["CASSANDRA_KEYSPACE"]
     $stdout.puts cassandra_db
     expect(cassandra_db).not_to be_empty
@@ -16,10 +17,9 @@ feature 'creates an cassandra db and makes sure it can be reached', sauce: false
     cassandra_db2 = JSON.parse(geturlbody)["CASSANDRA_KEYSPACE"]
     expect(cassandra_db2).to eq(cassandra_db)
  
-#    showmeasurementsbody = app.cassandraapi.showmeasurements(JSON.parse(geturlbody)["INFLUX_DB"],JSON.parse(geturlbody)["INFLUX_URL"],JSON.parse(geturlbody)["INFLUX_USERNAME"],JSON.parse(geturlbody)["INFLUX_PASSWORD"] )
-#    $stdout.puts showmeasurementsbody
-#    expect(showmeasurementsbody).to eq("{\"results\":[{\"statement_id\":0}]}\n")
-
+    response =  app.cassandraapi.hitDB(JSON.parse(geturlbody)["CASSANDRA_LOCATION"], JSON.parse(geturlbody)["CASSANDRA_KEYSPACE"],JSON.parse(geturlbody)["CASSANDRA_USERNAME"],JSON.parse(geturlbody)["CASSANDRA_PASSWORD"])
+    $stdout.puts response
+    expect(response).to eq(JSON.parse(geturlbody)["CASSANDRA_KEYSPACE"])
 
     deletebody = app.cassandraapi.deletedb(JSON.parse(geturlbody)["CASSANDRA_KEYSPACE"])
     $stdout.puts deletebody
