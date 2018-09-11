@@ -13,10 +13,6 @@ node {
         container.push()
         container.push 'latest'
 
-        uicontainer_name = "bashirui"
-        uicontainer = docker.build("${org_name}/${uicontainer_name}:${build_tag}","-f Dockerfile.ui .")
-        uicontainer.push()
-        uicontainer.push 'latest'
      } 
     stage 'Email Results'
          step([$class: 'Mailer', recipients: 'murray.resinski@octanner.com'])
