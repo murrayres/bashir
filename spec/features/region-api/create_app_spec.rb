@@ -15,6 +15,11 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
       'internal': false,
       'stack':'ds1' 
     }
+    when 'LOCAL'
+    { 'name': 'bashir',
+      'internal': false,
+      'stack':'ds1'
+    }
     end
   end
   let(:appinfo) do
@@ -24,6 +29,10 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
         'appport': 80
       }
     when 'MARU'
+    { 'appname': 'testapp',
+      'appport': 80
+    }
+    when 'LOCAL'
     { 'appname': 'testapp',
       'appport': 80
     }
@@ -43,6 +52,12 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
       'instances': 1,
       'plan':'scout'
     }
+    when 'LOCAL'
+    { 'appname': 'testapp',
+      'space': 'bashir',
+      'instances': 1,
+      'plan':'scout'
+    }
     end
   end
   let(:configsetinfo) do
@@ -52,6 +67,10 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
         'type': 'app'
       }
     when 'MARU'
+    { 'name': 'testapp-bashir',
+      'type': 'app'
+    }
+    when 'LOCAL'
     { 'name': 'testapp-bashir',
       'type': 'app'
     }
@@ -65,6 +84,11 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
         'varvalue': '80'
       }
     when 'MARU'
+    { 'setname': 'testapp-bashir',
+      'varname': 'PORT',
+      'varvalue': '80'
+    }
+    when 'LOCAL'
     { 'setname': 'testapp-bashir',
       'varname': 'PORT',
       'varvalue': '80'
@@ -83,6 +107,11 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
       'space': 'bashir',
       'image': 'nginx:1.7.9'
     }
+    when 'LOCAL'
+    { 'appname': 'testapp',
+      'space': 'bashir',
+      'image': 'nginx:1.7.9'
+    }
    end
   end
   let(:livecheckinfo) do
@@ -90,6 +119,8 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
     when 'DS2'
       { 'url': 'https://testapp-bashir.ds2app.octanner.io'}
     when 'MARU'
+    { 'url': 'https://testapp-bashir.maruapp.octanner.io'}
+    when 'LOCAL'
     { 'url': 'https://testapp-bashir.maruapp.octanner.io'}
     end
   end
@@ -141,6 +172,12 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
       JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
       JSON.parse(app.regionapi.deleteapp("testapp"))
       $stdout.puts "done with reset"
+    when 'LOCAL'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
     end
   end
 
@@ -155,6 +192,12 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
       JSON.parse(app.regionapi.deleteapp("testapp"))
       $stdout.puts "done with reset"
     when 'MARU'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
+    when 'LOCAL'
       JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
       JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
       JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))

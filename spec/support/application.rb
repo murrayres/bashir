@@ -9,6 +9,9 @@ module AutomationFramework
     def influxapi
       @influxapi ||= Influxapi.new
     end
+    def cassandraapi
+      @cassandraapi ||= Cassandraapi.new
+    end
   end
   # rubocop:enable Metrics/ClassLength
 end
