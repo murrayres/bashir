@@ -36,8 +36,8 @@ end
 # rubocop:enable Style/ConditionalAssignment
 
 dotenv_files = ["./config/environments/.env.#{app_env}.local",
-                './config/environments/.env.local',
                 "./config/environments/.env.#{app_env}",
+                './config/environments/.env.local',
                 './config/environments/.env']
 Dotenv.load(*dotenv_files.map(&:downcase))
 
