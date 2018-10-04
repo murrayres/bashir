@@ -7,7 +7,7 @@ feature 'creates an cassandra db and makes sure it can be reached', sauce: false
 
   scenario 'provision, get url, access, delete',
            type: 'contract', appserver: 'none', broken: false,
-           development: true, staging: true, production: false do
+           development: true, staging: true, production: true do
 
     cassandra_db = JSON.parse(provisionbody)["CASSANDRA_KEYSPACE"]
     $stdout.puts cassandra_db

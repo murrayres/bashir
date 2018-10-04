@@ -7,7 +7,7 @@ feature 'creates an influx db and makes sure it can be reached', sauce: false do
 
   scenario 'provision, get url, access, delete',
            type: 'contract', appserver: 'none', broken: false,
-           development: true, staging: true, production: false do
+           development: true, staging: true, production: true do
     influx_db = JSON.parse(provisionbody)["INFLUX_DB"]
     $stdout.puts influx_db
     expect(influx_db).not_to be_empty

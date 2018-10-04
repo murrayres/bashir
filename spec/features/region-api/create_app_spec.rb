@@ -5,6 +5,11 @@ app = AutomationFramework::Application.new
 feature 'creates an external app and makes sure it is up and can be reached', sauce: false do
   let(:spaceinfo) do
     case app.env
+    when 'DS1'
+      { 'name': 'bashir',
+        'internal': false,
+        'stack':'ds1'
+      }
     when 'DS2'
       { 'name': 'bashir',
         'internal': false,
@@ -24,6 +29,11 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   end
   let(:appinfo) do
     case app.env
+    when 'DS1'
+      { 'name': 'bashir',
+        'internal': false,
+        'stack':'ds1'
+      }
     when 'DS2'
       { 'appname': 'testapp',
         'appport': 80
@@ -40,6 +50,12 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   end
   let(:spaceappinfo) do
     case app.env
+    when 'DS1'
+      { 'appname': 'testapp',
+        'space': 'bashir',
+        'instances': 1,
+        'plan':'scout'
+      }
     when 'DS2'
       { 'appname': 'testapp',
         'space': 'bashir',
@@ -62,6 +78,10 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   end
   let(:configsetinfo) do
     case app.env
+    when 'DS1'
+      { 'name': 'testapp-bashir',
+        'type': 'app'
+      }
     when 'DS2'
       { 'name': 'testapp-bashir',
         'type': 'app'
@@ -78,6 +98,11 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   end
   let(:configvarinfo) do
     case app.env
+    when 'DS1'
+      { 'setname': 'testapp-bashir',
+        'varname': 'PORT',
+        'varvalue': '80'
+      }
     when 'DS2'
       { 'setname': 'testapp-bashir',
         'varname': 'PORT',
@@ -97,6 +122,11 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   end
   let(:deployinfo) do
     case app.env
+    when 'DS1'
+      { 'appname': 'testapp',
+        'space': 'bashir',
+        'image': 'nginx:1.7.9'
+      }
     when 'DS2'
       { 'appname': 'testapp',
         'space': 'bashir',
@@ -116,6 +146,8 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   end
   let(:livecheckinfo) do
     case app.env
+    when 'DS1'
+      { 'url': 'https://testapp-bashir.alamoapp.octanner.io'}
     when 'DS2'
       { 'url': 'https://testapp-bashir.ds2app.octanner.io'}
     when 'MARU'
