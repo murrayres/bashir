@@ -223,6 +223,12 @@ $stdout.puts "done createapp"
   after(:all) do
     $stdout.puts "running reset"
     case app.env
+    when 'DS1'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
     when 'DS2'
       JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
       JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
