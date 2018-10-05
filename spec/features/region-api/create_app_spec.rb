@@ -30,9 +30,8 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   let(:appinfo) do
     case app.env
     when 'DS1'
-      { 'name': 'bashir',
-        'internal': false,
-        'stack':'ds1'
+      { 'appname': 'testapp',
+        'appport': 80
       }
     when 'DS2'
       { 'appname': 'testapp',
@@ -165,8 +164,9 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
 
   scenario 'create an app and make sure it is up',
            type: 'contract', appserver: 'none', broken: false,
-           development: true, staging: true, production: false do
+           development: true, staging: true, production: true do
     expect(JSON.parse(appresponsebody)).not_to be_empty
+$stdout.puts "done createapp"
     expect(JSON.parse(spaceappresponsebody)).not_to be_empty
     expect(JSON.parse(configsetresponsebody)).not_to be_empty
     expect(JSON.parse(configvarresponsebody)).not_to be_empty
@@ -192,6 +192,12 @@ feature 'creates an external app and makes sure it is up and can be reached', sa
   before(:all) do
     $stdout.puts "running reset"
     case app.env
+    when 'DS1'
+      JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
+      JSON.parse(app.regionapi.deleteappfromspace("testapp", "bashir"))
+      JSON.parse(app.regionapi.deleteapp("testapp"))
+      $stdout.puts "done with reset"
     when 'DS2'
       JSON.parse(app.regionapi.deleteconfigvar("testapp-bashir", "PORT"))
       JSON.parse(app.regionapi.deleteconfigset("testapp-bashir"))
