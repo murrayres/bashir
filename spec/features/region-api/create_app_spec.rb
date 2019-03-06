@@ -2,7 +2,7 @@ require 'spec_helper'
 
 app = AutomationFramework::Application.new
 
-feature 'creates an external app and makes sure it is up and can be reached', sauce: false do
+feature 'creates an app and makes sure it is up and can be reached', sauce: false do
   let(:spaceinfo) do
     case app.env
     when 'DS1'
