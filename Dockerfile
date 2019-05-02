@@ -1,4 +1,4 @@
-FROM quay.octanner.io/base/oct-ruby:2.4.1
+FROM ruby:2.5
 RUN apt-get update
 RUN apt-get install -y libkrb5-dev
 RUN bundle config --global frozen 1

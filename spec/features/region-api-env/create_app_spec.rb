@@ -335,12 +335,12 @@ $stdout.puts "done createapp"
       JSON.parse(app.regionapi.deleteappfromspace(appname, spacename))
       JSON.parse(app.regionapi.deleteapp(appname))
       $stdout.puts "done with reset"
-    #when 'BS1'
-    #  JSON.parse(app.regionapi.deleteconfigvar(appname+'-'+spacename, "PORT"))
-    #  JSON.parse(app.regionapi.deleteconfigset(appname+'-'+spacename))
-    #  JSON.parse(app.regionapi.deleteappfromspace(appname, spacename))
-    #  JSON.parse(app.regionapi.deleteapp(appname))
-    #  $stdout.puts "done with reset"
+    when 'BS1'
+      JSON.parse(app.regionapi.deleteconfigvar(appname+'-'+spacename, "PORT"))
+      JSON.parse(app.regionapi.deleteconfigset(appname+'-'+spacename))
+      JSON.parse(app.regionapi.deleteappfromspace(appname, spacename))
+      JSON.parse(app.regionapi.deleteapp(appname))
+      $stdout.puts "done with reset"
     when 'MARU'
       JSON.parse(app.regionapi.deleteconfigvar(appname+'-'+spacename, "PORT"))
       JSON.parse(app.regionapi.deleteconfigset(appname+'-'+spacename))
