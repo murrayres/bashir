@@ -1,6 +1,7 @@
-FROM quay.octanner.io/base/oct-ruby:2.4.1
+FROM quay.octanner.io/developer/rubychrome
 RUN apt-get update
-RUN apt-get install -y libkrb5-dev
+RUN apt-get install -y libkrb5-dev python python-pip
+RUN pip install awscli
 RUN bundle config --global frozen 1
 
 WORKDIR /gems
@@ -14,4 +15,5 @@ ENV APP_DIR /app
 WORKDIR /app
 COPY . .
 
-CMD ./start.sh
+CMD ./startui.sh
+

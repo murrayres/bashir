@@ -1,6 +1,7 @@
 require File.expand_path('../../config/environment', __FILE__)
 require 'capybara'
 require 'capybara/rspec'
+require 'capybara-screenshot/rspec'
 require 'csv'
 require 'dotenv'
 require 'support/utilities'
@@ -51,6 +52,7 @@ Capybara.configure do |config|
   config.default_driver = :selenium
 end
 
+
 RSpec.configure do |config|
   config.include Capybara::DSL
   config.include Capybara::RSpecMatchers
@@ -60,19 +62,24 @@ RSpec.configure do |config|
   config.default_retry_count = 2
   config.default_sleep_interval = 2
   config.filter_run_excluding broken: true
-  case app_env
-  when
-    'DS1' then config.filter_run_excluding production: false
-  when
-    'DS2' then config.filter_run_excluding staging: false
-  when
-    'MARU' then config.filter_run_excluding development: false
-  end
+  Capybara.register_driver :logging_selenium_chrome do |app|
+       caps = Selenium::WebDriver::Remote::Capabilities.chrome(loggingPrefs:{browser: 'ALL'})
+       browser_options = ::Selenium::WebDriver::Chrome::Options.new()
+           puts "Is running headless in docker!"
+           browser_options.args << '--headless'
+           browser_options.args << '--disable-gpu'
+           browser_options.args << '--window-size=1980,1980'
+           browser_options.args << '--disable-dev-shm-usage'
+           browser_options.args << '--no-sandbox'
+      Capybara::Selenium::Driver.new(app, :browser => :chrome, options: browser_options,  desired_capabilities: caps)
+    Capybara.javascript_driver = :logging_selenium_chrome
+    Capybara.current_driver = :selenium_chrome
+    browser = Capybara.current_session.driver.browser
+    browser.manage.delete_all_cookies
+    Capybara.reset_sessions!
+    Capybara.current_session.driver.quit
+end
 
-  config.expect_with :rspec do |c|
-    c.syntax = %i[should expect]
-  end
 
-  
   # rubocop:enable Style/GlobalVars, Lint/ShadowingOuterLocalVariable
 end
