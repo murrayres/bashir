@@ -6,12 +6,16 @@ require 'capybara-screenshot/rspec'
 
 app = AutomationFramework::Application.new
 
-feature 'runs a test that always passes', sauce: false do
+feature 'runs a test that should always fail', sauce: false do
 
-   scenario 'expect 1 to equal 1',
+   scenario 'expect 200',
            type: 'contract', appserver: 'none', broken: false,
            development: true, staging: true, production: true do
 
+    def web_status_code(url)
+      resp = Net::HTTP.get_response(URI(url))
+      return resp.code
+    end
 
       Capybara.default_driver = :chrome
         Capybara.register_driver :selenium_chrome do |app|
@@ -30,9 +34,13 @@ feature 'runs a test that always passes', sauce: false do
 
       Capybara::Screenshot.autosave_on_failure = true
       Capybara::Screenshot.prune_strategy = :keep_last_run
-
-      visit 'https://appsigna.com/cgi-bin/'
+      url = 'https://appsigna.com/cgi-bin/'
+      visit(url)
+      code = web_status_code(url)
+ 
       page.save_screenshot("./test-results/ss.png")
+      expect(code).to eq("200")
+
 end
 end
 
