@@ -8,7 +8,7 @@ app = AutomationFramework::Application.new
 
 feature 'runs a test that always passes', sauce: false do
 
-   scenario 'expect 1 to equal 1',
+   scenario 'expect response code to be 200',
            type: 'contract', appserver: 'none', broken: false,
            development: true, staging: true, production: true do
 

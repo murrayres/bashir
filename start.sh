@@ -1,9 +1,9 @@
 #!/bin/bash
 
-
-source /opt/bin/functions.sh
-
 export GEOMETRY="$SCREEN_WIDTH""x""$SCREEN_HEIGHT""x""$SCREEN_DEPTH"
+
+mkdir ./test-results
+rm -f ./test-results/*
 
 function shutdown {
   kill -s SIGTERM $NODE_PID
@@ -14,11 +14,10 @@ if [ ! -z "$SE_OPTS" ]; then
   echo "appending selenium options: ${SE_OPTS}"
 fi
 
-SERVERNUM=$(get_server_num)
 
 rm -f /tmp/.X*lock
 
-xvfb-run -n $SERVERNUM --server-args="-screen 0 $GEOMETRY -ac +extension RANDR" \
+xvfb-run  --server-args="-screen 0 $GEOMETRY -ac +extension RANDR" \
   java ${JAVA_OPTS} -jar /opt/selenium/selenium-server-standalone.jar \
   ${SE_OPTS} &
 NODE_PID=$!
@@ -33,7 +32,7 @@ else
 fi
 
 if [ ! -z "${TAAS_RUNID}" ]; then
-  cd /test-results
+  cd ./test-results
   export AWS_REGION=${TAAS_ARTIFACT_REGION}
   export AWS_ACCESS_KEY_ID=${TAAS_AWS_ACCESS_KEY_ID}
   export AWS_SECRET_ACCESS_KEY=${TAAS_AWS_SECRET_ACCESS_KEY}
