@@ -31,7 +31,7 @@ feature 'runs a test that always passes', sauce: false do
       Capybara::Screenshot.autosave_on_failure = true
       Capybara::Screenshot.prune_strategy = :keep_last_run
 
-      visit 'https://appsignal.com'
+      visit 'https://sd.keepcalms.com/i-w600/keep-calm-and-merp-derp.jpg'
       page.save_screenshot("./test-results/ss.png")
 end
 end
