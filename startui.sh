@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo $APP_URL
 export GEOMETRY="$SCREEN_WIDTH""x""$SCREEN_HEIGHT""x""$SCREEN_DEPTH"
 
 mkdir ./test-results
