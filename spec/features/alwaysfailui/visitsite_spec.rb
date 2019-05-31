@@ -35,6 +35,7 @@ feature 'runs a test that should always fail', sauce: false do
       Capybara::Screenshot.autosave_on_failure = true
       Capybara::Screenshot.prune_strategy = :keep_last_run
       url = 'https://appsigna.com/cgi-bin/'
+      url = 'http://mockbin.com/status/500'
       visit(url)
       code = web_status_code(url)
  
